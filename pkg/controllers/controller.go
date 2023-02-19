@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"go-server/pkg/logger"
 	"go-server/pkg/models"
 	"go-server/pkg/redis"
 	"log"
@@ -41,4 +42,6 @@ func GetUsersById(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
 	c.Header("Cache", "None")
 	c.JSON(http.StatusOK, user)
+
+	logger.Logger.Info("INFO: user fetched successfully")
 }

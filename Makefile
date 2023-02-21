@@ -1,8 +1,8 @@
 CGO_ENABLED=0
 GOOS=linux
 GOARCH=amd64
-BIN="bin"
-APP="service"
+BIN="build"
+APP="go-server"
 SRC=$(shell find . -name "*.go")
 SERVICE_PREFIX=''
 SERVICE_NAME='service'

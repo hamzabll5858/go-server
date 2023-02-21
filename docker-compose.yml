@@ -54,6 +54,13 @@ services:
       - DATABASE_URL=localhost:5432
     ports:
       - '8080:8080'
+  grpcox:
+    image: gusaul/grpcox
+    network_mode: "host"
+    ports:
+      - "6969:6969"
+    volumes:
+      - ./log:/log
 volumes:
   db:
     driver: local

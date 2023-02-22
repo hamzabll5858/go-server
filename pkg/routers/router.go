@@ -6,9 +6,12 @@ import (
 	"go-server/pkg/controllers"
 	"go-server/pkg/middleware"
 	"go-server/pkg/models"
+	"sync"
 )
 
-func InitRouter()  {
+func InitRouter(wg *sync.WaitGroup)  {
+	defer wg.Done()
+
 	models.InitDB()
 	router := gin.Default()
 	router.GET("/users", controllers.GetUsers)

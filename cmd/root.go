@@ -8,10 +8,12 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"go-server/pkg/routers"
 	grpc_server "go-server/pkg/grpc"
+	"go-server/pkg/routers"
+	"go-server/pkg/smtp"
 	"os"
 	"strings"
+	"sync"
 )
 
 var cfgFile string
@@ -30,11 +32,22 @@ to quickly create a Cobra application.`,
 	// has an action associated with it:
 	Args: cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
-		grpc, _ := cmd.Flags().GetBool("grpc")
-		if grpc {
+		var wg sync.WaitGroup
+		grpc_enabled, _ := cmd.Flags().GetBool("grpc-server")
+		wg.Add(1)
+		if grpc_enabled {
 			go grpc_server.InitGRPC()
 		}
-		routers.InitRouter()
+		http_enabled, _ := cmd.Flags().GetBool("http-server")
+		if http_enabled {
+			go routers.InitRouter(&wg)
+		}
+		send_mail, _ := cmd.Flags().GetBool("send-mail")
+		if send_mail {
+			smtp.SMTPSend()
+			wg.Done()
+		}
+		wg.Wait()
 	},
 }
 
@@ -59,7 +72,9 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	rootCmd.Flags().BoolP("grpc", "g", false, "Run GRPC server")
+	rootCmd.Flags().BoolP("grpc-server", "G", false, "Run GRPC server")
+	rootCmd.Flags().BoolP("http-server", "S", false, "Run HTTP server")
+	rootCmd.Flags().BoolP("send-mail", "m", false, "send a test mail")
 }
 
 // initConfig reads in config file and ENV variables if set.

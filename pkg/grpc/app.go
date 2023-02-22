@@ -3,6 +3,7 @@ package grpc
 import (
 	"github.com/spf13/viper"
 	grpc_server "go-server/pkg/grpc/server"
+	"go-server/pkg/models"
 
 	"log"
 	"net"
@@ -13,6 +14,7 @@ import (
 func InitGRPC() {
 	println("gRPC User Services running on Addr: "+viper.GetString("grpc.url"))
 
+	models.InitDB()
 	listener, err := net.Listen("tcp", viper.GetString("grpc.url"))
 	if err != nil {
 		panic(err)
